@@ -41,7 +41,7 @@ const postAgregar = async (req, res) => {
     const fecha = new Date();
     await pool.query('insert into solicitudes(cod_cliente,monto,cuotas,estado,fecha) values ($1,$2,$3,$4,$5)', [cod_cliente, monto,cuotas, 'En Proceso', fecha]);
 
-    const sendMail = (req, res) => {
+    
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         const msg = {
             to: correo,
@@ -59,7 +59,6 @@ const postAgregar = async (req, res) => {
                 console.error(error)
                 res.status(500).json({ message: 'Error sending email', res: error });
             });
-    }
 
 }
 const consultar = async (req, res) => {
