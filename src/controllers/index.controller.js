@@ -34,23 +34,20 @@ const postSolicitudes = async (req, res) => {
 }
 
 const postAgregar = async (req, res) => {
-    const { nombres, ap_paterno, ap_materno, correo, monto, dni, fnacimiento } = req.body;
+    const { nombres, ap_paterno, ap_materno, correo, monto,cuotas, dni, fnacimiento } = req.body;
     const response = await pool.query('INSERT INTO CLIENTES(nombres,ap_paterno,ap_materno,correo,dni,fnacimiento) VALUES ($1,$2,$3,$4,$5,$6) returning cod_cliente', [nombres, ap_paterno, ap_materno, correo, dni, fnacimiento]);
 
     const { cod_cliente } = response.rows[0];
     const fecha = new Date();
-    await pool.query('insert into solicitudes(cod_cliente,monto,estado,fecha) values ($1,$2,$3,$4)', [cod_cliente, monto, 'En Proceso', fecha]);
+    await pool.query('insert into solicitudes(cod_cliente,monto,cuotas,estado,fecha) values ($1,$2,$3,$4,$5)', [cod_cliente, monto,cuotas, 'En Proceso', fecha]);
 
     const sendMail = (req, res) => {
-
-
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
         const msg = {
             to: correo,
-            from: 'labantom.@unitru.edu.pe',
+            from: 'bancob381@gmail.com',
             subject: `Estado de Solicitud - Cliente (${nombres} ${ap_paterno} ${ap_materno})`,
-            text: 'Su solicitud ha sido enviada, su estado actual es EN PROCESO.',
+            text: `Su solicitud de ${monto} soles, para pagar en ${cuotas} cuotas ha sido enviada. Por favor descargue nuestra app móvil`,
         }
         sgMail
             .send(msg)
@@ -75,8 +72,8 @@ const mensaje = (req, res) => {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
     const msg = {
-        to: 'piero0716.mc@gmail.com', // correo a quien se manda el mensaje
-        from: 'juecepeprestamos@gmail.com',// correo de la cuenta del api key
+        to: 'luchitoabantomartinez@gmail.com', // correo a quien se manda el mensaje
+        from: 'bancob381@gmail.com',// correo de la cuenta del api key
         subject: `Estado de Solicitud - Cliente`,
         text: 'Su solicitud ha sido enviada, su estado actual es EN PROCESO.',
     }
